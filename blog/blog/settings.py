@@ -25,7 +25,7 @@ SECRET_KEY = 'kd%r*&%l=idpr_av-28ys0ncigf2-^_w*g8x@wn!b0&2jnscsl'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['49.232.149.242']
 
 
 # Application definition
@@ -75,8 +75,12 @@ WSGI_APPLICATION = 'blog.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'wangrui_blog',
+        'HOST': '127.0.0.1', # 数据库地址，本机 ip 地址 127.0.0.1 
+        'PORT': 3306, # 端口 
+        'USER': 'root',  # 数据库用户名
+        'PASSWORD': '', # 数据库密码
     }
 }
 
