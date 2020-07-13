@@ -25,7 +25,7 @@ SECRET_KEY = 'kd%r*&%l=idpr_av-28ys0ncigf2-^_w*g8x@wn!b0&2jnscsl'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['49.232.149.242']
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -37,7 +37,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'users.apps.UsersConfig'
+    'users.apps.UsersConfig',
+    'corsheaders'
 ]
 
 MIDDLEWARE = [
@@ -190,4 +191,35 @@ LOGGING = {
         },
     }
 }
-   
+
+#在中间件中加入跨域中间件，CorsMiddleware最好放在最开始的地方
+MIDDLEWARE_CLASSES = (
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware', # 注意顺序
+)
+
+#跨域设置，#跨域增加忽略
+CORS_ALLOW_CREDENTIALS = True
+CORS_ORIGIN_ALLOW_ALL = True
+CORS_ALLOW_HEADERS = (' * ')
+CORS_ALLOW_METHODS = (
+    'DELETE',
+    'GET',
+    'OPTIONS',
+    'PATCH',
+    'POST',
+    'PUT',
+    'VIEW',
+)
+CORS_ALLOW_HEADERS = (
+    'XMLHttpRequest',
+    'X_FILENAME',
+    'accept-encoding',
+    'authorization',
+    'content-type',
+    'dnt',
+    'origin',
+    'user-agent',
+    'x-csrftoken',
+    'x-requested-with',
+)   
