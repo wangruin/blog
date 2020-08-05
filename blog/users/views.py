@@ -3,63 +3,9 @@ from django.shortcuts import render
 from django.views import View
 from django.http.response import HttpResponseBadRequest
 import re
-from users.models import User
-from django.db import DatabaseError
-from django.shortcuts import  redirect
-from django.urls import reverse
 class RegisterView(View):
     def get(self,request):
         return render(request,'register.html')
-    def post(self,request):
-        mobile=request.POST.get('mobile')
-        password=request.POST.get('password')
-        password2=request.POST.get('password2')
-        smscode=request.POST.get('sms_code')
-        # 2.验证数据
-        #     2.1 参数是否齐全
-        if not all([mobile,password,password2,smscode]):
-            return HttpResponseBadRequest('缺少必要的参数')
-        #     2.2 手机号的格式是否正确
-        if not re.match(r'^1[3-9]\d{9}$',mobile):
-            return HttpResponseBadRequest('手机号不符合规则')
-        #     2.3 密码是否符合格式
-        if not re.match(r'^[0-9A-Za-z]{8,20}$',password):
-            return HttpResponseBadRequest('请输入8-20位密码，密码是数字，字母')
-        #     2.4 密码和确认密码要一致
-        if password != password2:
-            return HttpResponseBadRequest('两次密码不一致')
-        #     2.5 短信验证码是否和redis中的一致
-        redis_conn = get_redis_connection('default')
-        redis_sms_code=redis_conn.get('sms:%s'%mobile)
-        if redis_sms_code is None:
-            return HttpResponseBadRequest('短信验证码已过期')
-        if smscode != redis_sms_code.decode():
-            return HttpResponseBadRequest('短信验证码不一致')
-        # 3.保存注册信息
-        # create_user 可以使用系统的方法来对密码进行加密
-        try:
-            user=User.objects.create_user(username=mobile,
-                                      mobile=mobile,
-                                      password=password)
-        except DatabaseError as e:
-            logger.error(e)
-            return HttpResponseBadRequest('注册失败')
-
-        from django.contrib.auth import login
-        login(request,user)
-        # 4.返回响应跳转到指定页面
-        # 暂时返回一个注册成功的信息，后期再实现跳转到指定页面
-
-        # redirect 是进行重定向
-        # reverse 是可以通过 namespace:name 来获取到视图所对应的路由
-        response = redirect(reverse('home:index'))
-        # return HttpResponse('注册成功，重定向到首页')
-
-        #设置cookie信息，以方便首页中 用户信息展示的判断和用户信息的展示
-        response.set_cookie('is_login',True)
-        response.set_cookie('username',user.username,max_age=7*24*3600)
-
-        return response
 
 
 
